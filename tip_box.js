@@ -8,21 +8,25 @@ $(document or ".class or #id").tip_box({
 	COLOR : "#000", //文字顏色
 	SHADOW : "#333", //陰影顏色
 	DIR : "1", //出現位置 : 1 => 上方, 2 => 右方 , 3 => 下方, 4 => 左方
+	VAL_FROM : "1", //內容取得位置 : 1 => rel參數, 2 => href參數 , 3 => src參數, 4 => value參數
 	ACT_ID : "", //指定啟動元素 ID or Class (css 選取方法)
 	VAL_ID : "", //指定內容元素 ID
 	AFTER :  function() {  }, // 動作後執行擴充
+},function(VAL){
+	//callback
 });
 
 */
 
 (function($){
-	$.fn.tip_box = function(OPTION){
+	$.fn.tip_box = function(OPTION,CALLBACK){
 		var TIP = jQuery.extend({
 			BG : "#FFF", //背景顏色
 			BC : "#CCC", //邊框顏色
 			COLOR : "#000", //文字顏色
 			SHADOW : "#333", //陰影顏色
 			DIR : "1", //出現位置 : 1 => 上方, 2 => 右方 , 3 => 下方, 4 => 左方
+			VAL_FROM : "1", //內容取得位置 : 1 => rel參數, 2 => href參數 , 3 => src參數, 4 => value參數
 			ACT_ID : "", //指定啟動元素 ID or Class (css 選取方法)
 			VAL_ID : "", //指定內容元素 ID
 			AFTER :  function() {  }, // 動作後執行擴充			
@@ -144,10 +148,25 @@ $(document or ".class or #id").tip_box({
 			
 			//----hover----//
 			if(TIP.VAL_ID == ""){
-				var TIP_VAL = $(this).attr("rel");
+				switch(TIP.VAL_FROM){
+					case "1":
+						var TIP_VAL = $(this).attr("rel");
+					break;
+					case "2":
+						var TIP_VAL = $(this).attr("href");
+					break;
+					case "3":
+						var TIP_VAL = $(this).attr("src");
+					break;
+					case "4":
+						var TIP_VAL = $(this).val();
+					break;
+				}
 			}else{
 				var TIP_VAL = $("#"+ TIP.VAL_ID).html();
 			}
+			
+			//CALLBACK(TIP_VAL);
 	
 			if(TIP_VAL != "" && typeof(TIP_VAL) != "undefined" && typeof(TIP_VAL) != "null" && TIP_VAL != "lightbox"){
 				//----OJ----//
@@ -166,11 +185,11 @@ $(document or ".class or #id").tip_box({
 						var TIP_H_HELF = 0;
 						var TIP_H = $("div#tip_box").outerHeight();
 						
-						var TIP_TOP = OJ_TOP - (TIP_H + 20);
+						var TIP_TOP = OJ_TOP - (TIP_H + 15);
 					break;
 					case "2":
 						//----TIP_RIGHT----//
-						var TIP_LEFT = OJ_LEFT + (OJ_W + 20);
+						var TIP_LEFT = OJ_LEFT + (OJ_W + 15);
 						var TIP_W_HELF = 0;
 						var TIP_H_HELF = $("div#tip_box").outerHeight() / 2;
 						var TIP_H = $("div#tip_box").outerHeight();
@@ -184,11 +203,11 @@ $(document or ".class or #id").tip_box({
 						var TIP_H_HELF = 0;
 						var TIP_H = $("div#tip_box").outerHeight();
 						
-						var TIP_TOP = OJ_TOP + OJ_H + 20;
+						var TIP_TOP = OJ_TOP + OJ_H + 15;
 					break;
 					case "4":
 						//----TIP_LEFT----//
-						var TIP_LEFT = OJ_LEFT - ($("div#tip_box").outerWidth() + 20);
+						var TIP_LEFT = OJ_LEFT - ($("div#tip_box").outerWidth() + 15);
 						var TIP_W_HELF = 0;
 						var TIP_H_HELF = $("div#tip_box").outerHeight() / 2;
 						var TIP_H = $("div#tip_box").outerHeight();
@@ -212,6 +231,7 @@ $(document or ".class or #id").tip_box({
 			
 		});
 		
+		//----DEACTIVE----//
 		this.on("mouseleave",TIP.ACT_ID,function(){
 			$("div#tip_box").hide().remove();
 		});
